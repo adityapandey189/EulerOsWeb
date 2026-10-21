@@ -6,6 +6,7 @@ ENV ANDROID_SDK_ROOT=/opt/android-sdk
 ENV ANDROID_HOME=/opt/android-sdk
 ENV PATH="${PATH}:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/emulator"
 
+# Base dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     wget \
@@ -28,14 +29,16 @@ RUN apt-get update && apt-get install -y \
     libasound2t64 \
     && rm -rf /var/lib/apt/lists/*
 
+# Used for downloading the EulerOS image from Google Drive
 RUN pip3 install --break-system-packages gdown
 
+# Create required directories
 RUN mkdir -p \
     /app \
     /data/android-image \
     ${ANDROID_SDK_ROOT}/cmdline-tools
 
-# Android command-line tools
+# Install Android command-line tools
 RUN wget -q \
     https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
     -O /tmp/cmdline-tools.zip \
@@ -48,13 +51,19 @@ RUN wget -q \
 # Accept Android SDK licenses
 RUN yes | sdkmanager --licenses >/dev/null || true
 
-# Install ADB and Android Emulator
-RUN sdkmanager --update || true
-
-RUN sdkmanager --list | grep -E "emulator|platform-tools" || true
-
+# Install ADB
 RUN sdkmanager "platform-tools"
 
+# Install Android Emulator
+RUN sdkmanager "emulator"
+
+# Verify ADB installation
+RUN adb version
+
+# Verify Android Emulator installation
+RUN /opt/android-sdk/emulator/emulator -version
+
+# Container startup script
 COPY start.sh /app/start.sh
 
 RUN chmod +x /app/start.sh
