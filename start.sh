@@ -37,10 +37,9 @@ if [ "$INSTALLED_VERSION" != "$IMAGE_VERSION" ]; then
 
     echo "Downloading from Google Drive..."
 
-    gdown \
-        --fuzzy \
-        "$IMAGE_URL" \
-        -O "$ZIP_FILE"
+ gdown \
+    "$IMAGE_URL" \
+    -O "$ZIP_FILE"
 
     echo "Download complete."
 
