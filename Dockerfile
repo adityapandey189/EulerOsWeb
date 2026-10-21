@@ -49,9 +49,11 @@ RUN wget -q \
 RUN yes | sdkmanager --licenses >/dev/null || true
 
 # Install ADB and Android Emulator
-RUN sdkmanager \
-    "platform-tools" \
-    "emulator"
+RUN sdkmanager --update || true
+
+RUN sdkmanager --list | grep -E "emulator|platform-tools" || true
+
+RUN sdkmanager "platform-tools"
 
 COPY start.sh /app/start.sh
 
